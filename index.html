@@ -300,11 +300,54 @@ footer {
   <p>Write a 50-line adapter. Run the benchmark. Join the leaderboard.</p>
   <a href="https://github.com/jackjin1997/AgentBench-Live" class="btn btn-primary">View on GitHub</a>
   <a href="https://github.com/jackjin1997/AgentBench-Live/blob/main/CONTRIBUTING.md" class="btn btn-secondary">Contributing Guide</a>
+  <button onclick="share()" class="btn btn-secondary" style="cursor:pointer; background:none; font-family:inherit; color:var(--text); font-size:1rem;">Share Results</button>
 </div>
 
 <footer>
   Built with <a href="https://github.com/jackjin1997/AgentBench-Live">AgentBench-Live</a> &mdash; The open benchmark for AI agent task execution.
 </footer>
+
+<script>
+// Animate score bars on scroll
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.querySelectorAll('.bar-fill, .bar-mini-fill').forEach(bar => {
+        const w = bar.style.width;
+        bar.style.width = '0%';
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => { bar.style.width = w; });
+        });
+      });
+      observer.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.3 });
+document.querySelectorAll('.battle-card, .lb-table').forEach(el => observer.observe(el));
+
+// Animate stats counter
+document.querySelectorAll('.stat .num').forEach(el => {
+  const target = parseInt(el.textContent);
+  let current = 0;
+  const step = Math.ceil(target / 30);
+  const timer = setInterval(() => {
+    current = Math.min(current + step, target);
+    el.textContent = current;
+    if (current >= target) clearInterval(timer);
+  }, 30);
+});
+
+// Share button
+function share() {
+  const text = "Which AI coding agent actually gets work done? Claude Code vs Gemini CLI — real benchmarks, no vibes.";
+  const url = "https://jackjin1997.github.io/agent-vs-agent/";
+  if (navigator.share) {
+    navigator.share({ title: "Agent vs Agent", text, url });
+  } else {
+    window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank');
+  }
+}
+</script>
 
 </body>
 </html>
